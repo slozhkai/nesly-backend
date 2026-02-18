@@ -13,7 +13,7 @@ import { UserModule } from './user/user.module';
       username: process.env.DATABASE_USERNAME || 'root',
       password: process.env.DATABASE_PASSWORD || 'root',
       database: process.env.DATABASE_NAME || 'postgres',
-      entities: ['entity/*.ts'],
+      entities: ['entities/*.ts'],
       synchronize: false,
       retryAttempts: 100,
       retryDelay: 100,
