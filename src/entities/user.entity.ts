@@ -1,10 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
-export enum UserSex {
-  MALE = 'male',
-  FEMALE = 'female',
-  NOT_DEFINED = 'not_defined',
-}
+import { UserSex } from '../enums/user.enum';
 
 @Entity()
 export class UserEntity {
