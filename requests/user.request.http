@@ -1,0 +1,16 @@
+### POST user
+POST http://localhost:3000/user
+Content-Type: application/json
+
+{
+  "username": "oleg",
+  "email": "oleg@oleg.com",
+  "password": "Password123",
+  "gender": "male"
+}
+
+### GET all users request
+GET http://localhost:3000/user
+
+###
+GET http://localhost:3000
