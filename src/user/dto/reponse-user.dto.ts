@@ -1,5 +1,5 @@
 import { IsString, IsEmail, IsEnum, IsUUID } from 'class-validator';
-import { UserSex } from '../../enums/user.enum';
+import { UserGender } from '../../enums/user.enum';
 
 export class UserResponseDto {
   @IsUUID()
@@ -11,6 +11,6 @@ export class UserResponseDto {
   @IsEmail()
   email: string;
 
-  @IsEnum(UserSex)
-  sex: UserSex;
+  @IsEnum(UserGender)
+  gender: UserGender;
 }

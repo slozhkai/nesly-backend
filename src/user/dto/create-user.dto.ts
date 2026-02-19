@@ -2,14 +2,18 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { UserSex } from '../../enums/user.enum';
+import { UserGender } from '../../enums/user.enum';
 
 export class CreateUserDto {
+  @IsOptional()
+  id: string;
+
   @IsString()
   @IsNotEmpty({ message: 'Имя пользователя обязательно' })
   @MinLength(3, {
@@ -38,6 +42,6 @@ export class CreateUserDto {
   })
   password: string;
 
-  @IsEnum(UserSex, { message: 'Некорректное значение пола' })
-  sex: UserSex;
+  @IsEnum(UserGender, { message: 'Некорректное значение пола' })
+  gender: UserGender;
 }

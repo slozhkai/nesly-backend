@@ -1,8 +1,9 @@
-import { UserSex } from '../enums/user.enum';
+import { UserGender } from '../enums/user.enum';
 
-export interface UserInterface {
+export interface User {
+  id: string;
   username: string;
   email: string;
   password: string;
-  sex: UserSex;
+  gender: UserGender;
 }
