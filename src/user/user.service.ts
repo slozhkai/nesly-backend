@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
@@ -12,10 +16,28 @@ export class UserService {
   ) {}
 
   async create(user: CreateUserDto): Promise<UserEntity> {
-    return this.userRepository.save(user);
+    try {
+      if (await this.userRepository.find({ where: { email: user.email } })) {
+        new BadRequestException('Пользователь с таким Email уже существует');
+      }
+
+      if (
+        await this.userRepository.find({ where: { username: user.username } })
+      ) {
+        new BadRequestException('Пользователь с таким именем уже существует');
+      }
+
+      return this.userRepository.save(user);
+    } catch (err) {
+      throw new InternalServerErrorException('Error: ' + err);
+    }
   }
 
   async findAll(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+    try {
+      return this.userRepository.find();
+    } catch (err) {
+      throw new InternalServerErrorException('Error: ' + err);
+    }
   }
 }
