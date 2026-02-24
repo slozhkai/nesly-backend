@@ -10,6 +10,11 @@ import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 
+type SignInResponse = {
+  access_token: string;
+  refresh_token: string;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -19,10 +24,7 @@ export class AuthService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async signIn(
-    username: string,
-    password: string,
-  ): Promise<{ access_token: string }> {
+  async signIn(username: string, password: string): Promise<SignInResponse> {
     if (!username || !password) throw new BadRequestException();
 
     const user = await this.userRepository.findOneBy({ username });
@@ -42,8 +44,20 @@ export class AuthService {
       },
     );
 
+    const refresh_token = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        username: user.username,
+      },
+      {
+        expiresIn: '7d',
+        secret: this.configService.get<string>('JWT_SECRET_SECRET'),
+      },
+    );
+
     return {
       access_token,
+      refresh_token,
     };
   }
 }

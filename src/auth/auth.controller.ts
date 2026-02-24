@@ -20,7 +20,7 @@ export class AuthController {
     @Body() data: SignDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
-    const { access_token } = await this.authService.signIn(
+    const { access_token, refresh_token } = await this.authService.signIn(
       data.username,
       data.password,
     );
@@ -30,6 +30,13 @@ export class AuthController {
       secure: true,
       sameSite: 'lax',
       maxAge: 60 * 15 * 1000,
+    });
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 * 1000,
     });
 
     return { message: 'Success' };
