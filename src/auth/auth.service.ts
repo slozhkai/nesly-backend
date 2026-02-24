@@ -29,10 +29,16 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const access_token = await this.jwtService.signAsync({
-      sub: user.id,
-      username: user.username,
-    });
+    const access_token = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        username: user.username,
+      },
+      {
+        expiresIn: '15m',
+        secret: process.env.JWT_SECRET,
+      },
+    );
 
     return {
       access_token,
