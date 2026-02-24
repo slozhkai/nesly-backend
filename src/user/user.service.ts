@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { getHash } from '../utils/hash';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(user: CreateUserDto): Promise<UserEntity> {
@@ -27,7 +29,7 @@ export class UserService {
 
     const hashPassword = await getHash(
       user.password,
-      Number(process.env.HASH_SALT) || 10,
+      Number(this.configService.get<number>('HASH_SALT')) || 10,
     );
 
     return this.userRepository.save({
