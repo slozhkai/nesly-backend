@@ -21,4 +21,7 @@ export class UserEntity {
     default: UserGender.NOT_DEFINED,
   })
   gender: UserGender;
+
+  @Column({ nullable: true })
+  refresh_token: string;
 }

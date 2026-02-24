@@ -18,10 +18,10 @@ type SignInResponse = {
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   async signIn(username: string, password: string): Promise<SignInResponse> {
@@ -54,6 +54,13 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       },
     );
+
+    await this.userRepository.update(user.id, {
+      refresh_token: await bcrypt.hash(
+        refresh_token,
+        Number(this.configService.get<number>('HASH_SALT')) || 10,
+      ),
+    });
 
     return {
       access_token,
