@@ -3,15 +3,16 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
     private jwtService: JwtService,
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   async signIn(
@@ -20,16 +21,19 @@ export class AuthService {
   ): Promise<{ access_token: string }> {
     if (!username || !password) throw new BadRequestException();
 
-    const user = await this.userService.findOne(username);
+    const user = await this.userRepository.findOneBy({ username });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, username: user.username };
+    const access_token = await this.jwtService.signAsync({
+      sub: user.id,
+      username: user.username,
+    });
 
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token,
     };
   }
 }
