@@ -24,6 +24,20 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
+  private async generateTokensForUser(user: { id: string; username: string }) {
+    const access_token = await this.generateTokens.generateAccessToken({
+      id: user.id,
+      username: user.username,
+    });
+
+    const refresh_token = await this.generateTokens.generateRefreshToken({
+      id: user.id,
+      username: user.username,
+    });
+
+    return { access_token, refresh_token };
+  }
+
   async signIn(username: string, password: string): Promise<SignInResponse> {
     if (!username || !password) throw new BadRequestException();
 
@@ -33,12 +47,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const access_token = await this.generateTokens.generateAccessToken({
-      id: user.id,
-      username: user.username,
-    });
-
-    const refresh_token = await this.generateTokens.generateRefreshToken({
+    const { access_token, refresh_token } = await this.generateTokensForUser({
       id: user.id,
       username: user.username,
     });
@@ -72,15 +81,8 @@ export class AuthService {
     const user = await this.userService.create(req).then(userEntityToDto);
     console.log(user);
 
-    const access_token = await this.generateTokens.generateAccessToken({
-      id: user.id,
-      username: user.username,
-    });
-
-    const refresh_token = await this.generateTokens.generateRefreshToken({
-      id: user.id,
-      username: user.username,
-    });
+    const { access_token, refresh_token } =
+      await this.generateTokensForUser(user);
 
     await this.userRepository.update(user.id, {
       refresh_token: await bcrypt.hash(
