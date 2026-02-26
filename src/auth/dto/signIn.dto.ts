@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class SignInDto {
+export class RequestSignInDto {
   @IsString()
   @IsNotEmpty({ message: 'Имя пользователя обязательно' })
   @MinLength(3, {
@@ -31,3 +31,11 @@ export class SignInDto {
   })
   password: string;
 }
+
+export class SignInResponse {
+  @IsString()
+  access_token: string;
+
+  @IsString()
+  refresh_token: string;
+};

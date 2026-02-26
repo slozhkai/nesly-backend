@@ -1,5 +1,5 @@
 import { UserDto, UserResponseDto } from 'src/user/dto/user.dto';
 
-export type RequestSignUpDto = UserDto;
+export class RequestSignUpDto extends UserDto {}
 
-export type ResponseSignUpDto = UserResponseDto;
+export class ResponseSignUpDto extends UserResponseDto {}

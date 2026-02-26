@@ -12,11 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { userEntityToDto } from '../user/user.mappers';
 import { RequestSignUpDto, ResponseSignUpDto } from './dto/signUp.dto';
-
-type SignInResponse = {
-  access_token: string;
-  refresh_token: string;
-};
+import { SignInResponse } from './dto/signIn.dto';
 
 @Injectable()
 export class AuthService {

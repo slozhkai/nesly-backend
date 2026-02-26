@@ -7,9 +7,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dto/signIn.dto';
+import { RequestSignInDto } from './dto/signIn.dto';
 import type { Response } from 'express';
-import type { RequestSignUpDto, ResponseSignUpDto } from './dto/signUp.dto';
+import { RequestSignUpDto, ResponseSignUpDto } from './dto/signUp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
-    @Body() data: SignInDto,
+    @Body() data: RequestSignInDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
     const { access_token, refresh_token } = await this.authService.signIn(
