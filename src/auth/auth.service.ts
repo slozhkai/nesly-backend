@@ -13,11 +13,12 @@ import { UserService } from '../user/user.service';
 import { userEntityToDto } from '../user/user.mappers';
 import { RequestSignUpDto, ResponseSignUpDto } from './dto/signUp.dto';
 import { SignInResponse } from './dto/signIn.dto';
+import { GenerateTokens } from '../utils/generateTokens';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService,
+    private readonly generateTokens: GenerateTokens,
     private readonly configService: ConfigService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -33,27 +34,15 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const access_token = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        username: user.username,
-      },
-      {
-        expiresIn: '15m',
-        secret: this.configService.get<string>('JWT_SECRET'),
-      },
-    );
+    const access_token = await this.generateTokens.generateAccessToken({
+      id: user.id,
+      username: user.username,
+    });
 
-    const refresh_token = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        username: user.username,
-      },
-      {
-        expiresIn: '7d',
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      },
-    );
+    const refresh_token = await this.generateTokens.generateRefreshToken({
+      id: user.id,
+      username: user.username,
+    });
 
     await this.userRepository.update(user.id, {
       refresh_token: await bcrypt.hash(
