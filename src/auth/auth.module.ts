@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
+import { GenerateTokens } from '../utils/generateTokens';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { UserEntity } from '../entities/user.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, GenerateTokens],
 })
 export class AuthModule {}
