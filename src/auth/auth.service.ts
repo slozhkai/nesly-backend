@@ -9,6 +9,10 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserResponseDto } from '../user/dto/reponse-user.dto';
+import { UserService } from '../user/user.service';
+import { userEntityToDto } from '../user/user.mappers';
 
 type SignInResponse = {
   access_token: string;
@@ -22,6 +26,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly userService: UserService,
   ) {}
 
   async signIn(username: string, password: string): Promise<SignInResponse> {
@@ -66,5 +71,21 @@ export class AuthService {
       access_token,
       refresh_token,
     };
+  }
+
+  async signUp(user: CreateUserDto): Promise<UserResponseDto> {
+    if (await this.userRepository.findOneBy({ email: user.email })) {
+      throw new BadRequestException(
+        'Пользователь с таким Email уже существует',
+      );
+    }
+
+    if (await this.userRepository.findOneBy({ username: user.username })) {
+      throw new BadRequestException(
+        'Пользователь с таким именем уже существует',
+      );
+    }
+
+    return await this.userService.create(user).then(userEntityToDto);
   }
 }

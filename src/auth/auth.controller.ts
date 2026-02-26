@@ -9,6 +9,8 @@ import {
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signIn.dto';
 import type { Response } from 'express';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserResponseDto } from '../user/dto/reponse-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -40,5 +42,10 @@ export class AuthController {
     });
 
     return { message: 'Success' };
+  }
+
+  @Post('sign-up')
+  async signU(@Body() user: CreateUserDto): Promise<UserResponseDto> {
+    return this.authService.signUp(user);
   }
 }
