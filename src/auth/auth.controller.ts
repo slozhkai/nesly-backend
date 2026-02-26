@@ -9,8 +9,8 @@ import {
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signIn.dto';
 import type { Response } from 'express';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { UserResponseDto } from '../user/dto/reponse-user.dto';
+import { UserDto } from '../user/dto/user.dto';
+import { ResponseSignUpDto } from './dto/signUp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,7 +45,7 @@ export class AuthController {
   }
 
   @Post('sign-up')
-  async signU(@Body() user: CreateUserDto): Promise<UserResponseDto> {
+  async signU(@Body() user: UserDto): Promise<ResponseSignUpDto> {
     return this.authService.signUp(user);
   }
 }

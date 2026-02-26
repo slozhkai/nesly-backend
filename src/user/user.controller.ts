@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserResponseDto } from './dto/reponse-user.dto';
 import { userEntityToDto } from './user.mappers';
+import { UserResponseDto } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {

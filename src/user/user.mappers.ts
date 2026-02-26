@@ -1,5 +1,5 @@
 import { UserEntity } from '../entities/user.entity';
-import { UserResponseDto } from './dto/reponse-user.dto';
+import { UserResponseDto } from './dto/user.dto';
 
 export function userEntityToDto(user: UserEntity): UserResponseDto {
   return {

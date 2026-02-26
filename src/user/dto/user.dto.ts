@@ -4,13 +4,14 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { UserGender } from '../../enums/user.enum';
 
-export class CreateUserDto {
+export class UserDto {
   @IsOptional()
   id: string;
 
@@ -43,5 +44,19 @@ export class CreateUserDto {
   password: string;
 
   @IsEnum(UserGender, { message: 'Некорректное значение пола' })
+  gender: UserGender;
+}
+
+export class UserResponseDto {
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  username: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsEnum(UserGender)
   gender: UserGender;
 }
