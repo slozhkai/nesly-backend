@@ -79,7 +79,6 @@ export class AuthService {
     }
 
     const user = await this.userService.create(req).then(userEntityToDto);
-    console.log(user);
 
     const { access_token, refresh_token } =
       await this.generateTokensForUser(user);
