@@ -1,11 +1,13 @@
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 
 type GenerateTokensProps = {
   id: string;
   username: string;
 };
 
+@Injectable()
 export class GenerateTokens {
   constructor(
     private readonly jwtService: JwtService,
