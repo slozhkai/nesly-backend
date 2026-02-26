@@ -43,8 +43,29 @@ export class AuthController {
     return { message: 'Success' };
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('sign-up')
-  async signU(@Body() user: RequestSignUpDto): Promise<ResponseSignUpDto> {
-    return this.authService.signUp(user);
+  async signUp(
+    @Body() data: RequestSignUpDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<ResponseSignUpDto> {
+    const { access_token, refresh_token, ...user } =
+      await this.authService.signUp(data);
+
+    response.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 15 * 1000,
+    });
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 * 1000,
+    });
+
+    return user;
   }
 }

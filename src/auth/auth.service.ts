@@ -3,7 +3,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
@@ -57,19 +56,43 @@ export class AuthService {
     };
   }
 
-  async signUp(user: RequestSignUpDto): Promise<ResponseSignUpDto> {
-    if (await this.userRepository.findOneBy({ email: user.email })) {
+  async signUp(req: RequestSignUpDto): Promise<ResponseSignUpDto> {
+    if (await this.userRepository.findOneBy({ email: req.email })) {
       throw new BadRequestException(
         'Пользователь с таким Email уже существует',
       );
     }
 
-    if (await this.userRepository.findOneBy({ username: user.username })) {
+    if (await this.userRepository.findOneBy({ username: req.username })) {
       throw new BadRequestException(
         'Пользователь с таким именем уже существует',
       );
     }
 
-    return await this.userService.create(user).then(userEntityToDto);
+    const user = await this.userService.create(req).then(userEntityToDto);
+    console.log(user);
+
+    const access_token = await this.generateTokens.generateAccessToken({
+      id: user.id,
+      username: user.username,
+    });
+
+    const refresh_token = await this.generateTokens.generateRefreshToken({
+      id: user.id,
+      username: user.username,
+    });
+
+    await this.userRepository.update(user.id, {
+      refresh_token: await bcrypt.hash(
+        refresh_token,
+        Number(this.configService.get<number>('HASH_SALT')) || 10,
+      ),
+    });
+
+    return {
+      ...user,
+      access_token,
+      refresh_token,
+    };
   }
 }
