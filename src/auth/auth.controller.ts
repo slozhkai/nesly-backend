@@ -7,8 +7,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignDto } from './dto/sign.dto';
+import { RequestSignInDto } from './dto/signIn.dto';
 import type { Response } from 'express';
+import { RequestSignUpDto, ResponseSignUpDto } from './dto/signUp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +18,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
-    @Body() data: SignDto,
+    @Body() data: RequestSignInDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
     const { access_token, refresh_token } = await this.authService.signIn(
@@ -40,5 +41,31 @@ export class AuthController {
     });
 
     return { message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('sign-up')
+  async signUp(
+    @Body() data: RequestSignUpDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<ResponseSignUpDto> {
+    const { access_token, refresh_token, ...user } =
+      await this.authService.signUp(data);
+
+    response.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 15 * 1000,
+    });
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 * 1000,
+    });
+
+    return user;
   }
 }

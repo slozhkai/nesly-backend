@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Injectable } from '@nestjs/common';
+import { UserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { getHash } from '../utils/hash';
 import { ConfigService } from '@nestjs/config';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -14,20 +14,8 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(user: CreateUserDto): Promise<UserEntity> {
-    if (await this.userRepository.findOneBy({ email: user.email })) {
-      throw new BadRequestException(
-        'Пользователь с таким Email уже существует',
-      );
-    }
-
-    if (await this.userRepository.findOneBy({ username: user.username })) {
-      throw new BadRequestException(
-        'Пользователь с таким именем уже существует',
-      );
-    }
-
-    const hashPassword = await getHash(
+  async create(user: UserDto): Promise<UserEntity> {
+    const hashPassword = await bcrypt.hash(
       user.password,
       Number(this.configService.get<number>('HASH_SALT')) || 10,
     );
