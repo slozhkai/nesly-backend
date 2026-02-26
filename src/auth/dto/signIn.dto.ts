@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class SignDto {
+export class SignInDto {
   @IsString()
   @IsNotEmpty({ message: 'Имя пользователя обязательно' })
   @MinLength(3, {
